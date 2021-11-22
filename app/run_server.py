@@ -10,21 +10,21 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html')
 
 
 # Custom static data
-@app.route('/data/<path:filename>')
+@application.route('/data/<path:filename>')
 def files(filename):
     return send_from_directory('data', filename)
 
 
-@app.route('/test_pat/<id>')
+@application.route('/test_pat/<id>')
 def test_pat(id):
     result_pat1 = ''
     result_pat2 = ''
@@ -43,7 +43,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -74,11 +74,12 @@ def upload_file():
     '''
 
 
-@app.route('/series/', methods=['POST'])
+@application.route('/series/', methods=['POST'])
 def new_series():
     series = request.json
     return '<h1>Waiting for results</h1>' + json.dumps(series)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # application.run(debug=True, host='0.0.0.0')
+    application.run(host='0.0.0.0')
