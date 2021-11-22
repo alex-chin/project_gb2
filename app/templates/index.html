@@ -1,49 +1,52 @@
 {% extends "base.html" %}
 {% block body %}
-<h1>Разработка детектора COVID-19 аномалий в ритме сердца</h1>
-<p>Разработанная модель находит специфичные для COVID-19 аномалии в измерениях сердечного ритма человека</p>
+    <p>
+        <a href="{{ url_for('about') }}"> Особенности проекта </a>
+    </p>
+    <table>
+        <tr>
+            <th> Набор данный</th>
+            <th> Анализ на сервере</th>
+            <th> Результат</th>
+        </tr>
+        <tr>
+            <td><a href="{{ url_for('files', filename = 'pat1.csv') }}">Пациент 1</a></td>
+            <td><a href="{{ url_for('test_pat',id = 1) }}">Тестирование пациент1 предварительно положительный </a></td>
+            <td><span>{{ result_pat1 }}</span></td>
+        </tr>
+        <tr>
+            <td><a href="{{ url_for('files', filename = 'pat2.csv') }}">Пациент 2</a></td>
+            <td><a href="{{ url_for('test_pat',id = 2) }}">Тестирование пациент2 предварительно положительный </a></td>
+            <td><span>{{ result_pat2 }}</span></td>
+        </tr>
+        <tr>
+            <td><a href="{{ url_for('files', filename = 'pat3.csv') }}">Пациент 3</a></td>
+            <td><a href="{{ url_for('test_pat',id = 3) }}">Тестирование пациент3 предварительно отрицательный </a></td>
+            <td><span>{{ result_pat3 }}</span></td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
 
-<img src="static/CardioSpike.png" alt="">
-<table>
-    <tr>
-        <th> Набор данный</th>
-        <th> Анализ на сервере</th>
-        <th> Результат</th>
-    </tr>
-    <tr>
-        <td><a href="{{ url_for('files', filename = 'pat1.csv') }}">Пациент 1</a></td>
-        <td><a href="{{ url_for('test_pat',id = 1)}}">Тестирование пациент1 предварительно положительный </a></td>
-        <td><span>{{result_pat1}}</span></td>
-    </tr>
-    <tr>
-        <td><a href="{{ url_for('files', filename = 'pat2.csv') }}">Пациент 2</a></td>
-        <td><a href="{{ url_for('test_pat',id = 2)}}">Тестирование пациент2 предварительно положительный </a></td>
-        <td><span>{{result_pat2}}</span></td>
-    </tr>
-    <tr>
-        <td><a href="{{ url_for('files', filename = 'pat3.csv') }}">Пациент 3</a></td>
-        <td><a href="{{ url_for('test_pat',id = 3)}}">Тестирование пациент3 предварительно отрицательный </a></td>
-        <td><span>{{result_pat3}}</span></td>
-    </tr>
-    <tr>
-        <td></td>
-    </tr>
-    <tr>
-        <td></td>
-
-    </tr>
-    <tr>
-        <td>
-            <form method=post enctype=multipart/form-data>
-                <input type=file name=file>
-                <input type=submit value=Upload>
-            </form>
-        </td>
-        <td>Анализ загруженного файла</td>
-        <td><span>{{result_pat4}}</span></td>
-    </tr>
-</table>
-<code>
-    {{file_txt}}
-</code>
+        </tr>
+        <tr>
+            <td>
+                {% if is_home %}
+                    <form method=post enctype=multipart/form-data>
+                        <input type=file name=file>
+                        <input type=submit value=Upload formaction="{{ url_for('index') }}">
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('index') }}"> Загрузить файл </a>
+                {% endif %}
+            </td>
+            <td>Анализ загруженного файла</td>
+            <td><span>{{ result_pat4 }}</span></td>
+        </tr>
+    </table>
+    <code>
+        {{ file_txt }}
+    </code>
 {% endblock %}

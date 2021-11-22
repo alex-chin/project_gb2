@@ -15,8 +15,11 @@ application = Flask(__name__)
 
 @application.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', is_home=True)
 
+@application.route('/about')
+def about():
+    return render_template('about_sp.html')
 
 # Custom static data
 @application.route('/data/<path:filename>')
@@ -60,8 +63,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_txt = file.read()
             # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # return redirect(url_for('download_file', name=filename))
             result_pat4 = ' Результат - отрицательный, Найдено 0 аномалий. '
+            # return redirect(url_for('index', file_txt=file_txt, result_pat4=result_pat4))
             return render_template('index.html', file_txt=file_txt, result_pat4=result_pat4)
     return '''
     <!doctype html>
@@ -81,5 +84,5 @@ def new_series():
 
 
 if __name__ == '__main__':
-    # application.run(debug=True, host='0.0.0.0')
-    application.run(host='0.0.0.0')
+    application.run(debug=True, host='0.0.0.0')
+    # application.run(host='0.0.0.0')
