@@ -1,33 +1,75 @@
 import json
+from time import strftime
 
-import os
+import dill
 from flask import Flask, render_template, jsonify, send_from_directory, flash, redirect, url_for
-
 from flask import request
-
 from werkzeug.utils import secure_filename
+import pandas as pd
+import numpy as np # для модели dill
 
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
+model = None
 
 application = Flask(__name__)
 
 
+def load_model(model_path):
+    # load the pre-trained model
+    global model
+
+    with open(model_path, 'rb') as f:
+        model = dill.load(f)
+    print(model)
+
+
+modelpath = "model/dill_finall_model.dill"
+load_model(modelpath)
+
+'''
+
+Карта маршрутов
+ 
+> application.url_map
+Map([<Rule '/series/' (OPTIONS, POST) -> new_series>,
+ <Rule '/about' (HEAD, GET, OPTIONS) -> about>,
+ <Rule '/' (HEAD, GET, OPTIONS) -> index>,
+ <Rule '/' (HEAD, GET, OPTIONS, POST) -> upload_file>,
+ <Rule '/test_pat/<id>' (HEAD, GET, OPTIONS) -> test_pat>,
+ <Rule '/static/<filename>' (HEAD, GET, OPTIONS) -> static>,
+ <Rule '/data/<filename>' (HEAD, GET, OPTIONS) -> files>])
+'''
+
+'''
+ ======== Маршруты для реализации front-end ============
+'''
+
+
 @application.route('/')
 def index():
+    # главная страница
     return render_template('index.html', is_home=True)
+
 
 @application.route('/about')
 def about():
+    # страница о проекте
     return render_template('about_sp.html')
 
-# Custom static data
+
 @application.route('/data/<path:filename>')
 def files(filename):
+    # отдача файлов из специальной директории data
+    # - образцы исследований пациентов
+    # параметр - имя файла
     return send_from_directory('data', filename)
 
 
 @application.route('/test_pat/<id>')
 def test_pat(id):
+    # тестирование модели по малому кругу
+    # использование образцов в хранилище
+    # параметр - номер образца
     result_pat1 = ''
     result_pat2 = ''
     result_pat3 = ''
@@ -41,12 +83,14 @@ def test_pat(id):
 
 
 def allowed_file(filename):
+    # вспомогательная процедура для проверки расширения файла
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @application.route('/', methods=['GET', 'POST'])
 def upload_file():
+    # загрузка файла образцов допустима только с главной страницы
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -74,6 +118,49 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
+
+
+'''
+ ======== Маршруты для реализации API ============
+'''
+
+
+@application.route("/predict", methods=["POST"])
+def predict():
+    # initialize the data dictionary that will be returned from the
+    # view
+    data = {"success": False}
+    dt = strftime("[%Y-%b-%d %H:%M:%S]")
+    # ensure an image was properly uploaded to our endpoint
+    if request.method == "POST":
+
+        id, x = [], []
+        request_json = request.get_json()
+        if request_json["id"]:
+            id = request_json['id']
+
+        if request_json["x"]:
+            x = request_json['x']
+
+        # logger.info(f'{dt} Data: id={id}, x={x}')
+        try:
+            preds, diagnosis, pattern_per_5minute = model.predict(pd.DataFrame({"id": id, "x": x}))
+        except AttributeError as e:
+            # logger.warning(f'{dt} Exception: {str(e)}')
+            data['predictions'] = str(e)
+            data['diagnosis'] = str(e)
+            data['pattern_per_5minute'] = str(e)
+            data['success'] = False
+            return jsonify(data)
+
+        data["predictions"] = list(preds)  # list
+        data['diagnosis'] = diagnosis  # dict
+        data['pattern_per_5minute'] = pattern_per_5minute  # dict
+        # indicate that the request was a success
+        data["success"] = True
+
+    # return the data dictionary as a JSON response
+    return jsonify(data)
 
 
 @application.route('/series/', methods=['POST'])
