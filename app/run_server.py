@@ -18,14 +18,14 @@ application = Flask(__name__)
 def load_model(model_path):
     # load the pre-trained model
     global model
-    with application.open_instance_resource(model_path, 'rb') as f:
-        model = dill.load(f)
-    # with open(model_path, 'rb') as f:
+    # with application.open_instance_resource(model_path, 'rb') as f:
     #     model = dill.load(f)
+    with open(model_path, 'rb') as f:
+        model = dill.load(f)
     print(model)
 
 
-modelpath = os.path.join('model', 'finall_model.dill')
+modelpath = os.path.join(__file__, 'model', 'finall_model.dill')
 load_model(modelpath)
 
 '''
