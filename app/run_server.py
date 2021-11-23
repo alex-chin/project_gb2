@@ -1,4 +1,5 @@
 import json
+import os
 from time import strftime
 
 import dill
@@ -6,7 +7,7 @@ from flask import Flask, render_template, jsonify, send_from_directory, flash, r
 from flask import request
 from werkzeug.utils import secure_filename
 import pandas as pd
-import numpy as np # для модели dill
+import numpy as np  # для модели dill
 
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 model = None
@@ -17,13 +18,14 @@ application = Flask(__name__)
 def load_model(model_path):
     # load the pre-trained model
     global model
-
-    with open(model_path, 'rb') as f:
+    with application.open_instance_resource(model_path, 'rb') as f:
         model = dill.load(f)
+    # with open(model_path, 'rb') as f:
+    #     model = dill.load(f)
     print(model)
 
 
-modelpath = "model/dill_finall_model.dill"
+modelpath = os.path.join('model', 'finall_model.dill')
 load_model(modelpath)
 
 '''
