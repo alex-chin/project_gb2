@@ -7,7 +7,6 @@ from flask import request
 
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 
 application = Flask(__name__)
