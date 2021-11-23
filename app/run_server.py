@@ -25,7 +25,7 @@ def load_model(model_path):
     print(model)
 
 
-modelpath = os.path.join(__file__, 'model', 'finall_model.dill')
+modelpath = os.path.join(os.path.dirname(__file__), 'model', 'finall_model.dill')
 load_model(modelpath)
 
 '''
