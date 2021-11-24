@@ -8,6 +8,7 @@ from flask import request
 from werkzeug.utils import secure_filename
 import pandas as pd
 import numpy as np  # для модели dill
+print(np.__version__)
 
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 model = None
@@ -132,7 +133,7 @@ def predict():
     # initialize the data dictionary that will be returned from the
     # view
     data = {"success": False}
-    dt = strftime("[%Y-%b-%d %H:%M:%S]")
+    # dt = strftime("[%Y-%b-%d %H:%M:%S]")
     # ensure an image was properly uploaded to our endpoint
     if request.method == "POST":
 
