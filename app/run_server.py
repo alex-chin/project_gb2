@@ -27,7 +27,8 @@ def load_model(model_path):
     print(model)
 
 
-modelpath = os.path.join(os.path.dirname(__file__), 'model', 'init_finall_model.dill')
+# modelpath = os.path.join(os.path.dirname(__file__), 'model', 'init_finall_model.dill')
+modelpath = os.path.join(os.path.dirname(__file__), 'model', 'numpy_finall_model.dill')
 load_model(modelpath)
 
 preds, diagnosis, pattern_per_5minute = model.predict(pd.DataFrame(
