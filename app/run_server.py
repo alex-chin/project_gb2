@@ -8,6 +8,7 @@ from flask import request
 from werkzeug.utils import secure_filename
 import pandas as pd
 import numpy as np  # для модели dill
+
 print(np.__version__)
 
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
@@ -26,8 +27,12 @@ def load_model(model_path):
     print(model)
 
 
-modelpath = os.path.join(os.path.dirname(__file__), 'model', 'finall_model.dill')
+modelpath = os.path.join(os.path.dirname(__file__), 'model', 'init_finall_model.dill')
 load_model(modelpath)
+
+preds, diagnosis, pattern_per_5minute = model.predict(pd.DataFrame(
+    {"id": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+     "x": [760, 784, 772, 760, 768, 776, 852, 728, 800, 832, 808, 800, 840, 808, 792, 828, 808, 788, 816, 796]}))
 
 '''
 
