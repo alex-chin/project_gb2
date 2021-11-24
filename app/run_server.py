@@ -18,32 +18,9 @@ model = None
 
 application = Flask(__name__)
 
-# modelpath = "dill_clf_model.dill"
 modelpath = os.path.join(os.path.dirname(__file__), 'model', 'dill_clf_model.dill')
-# load_model(modelpath)
 model = Pipeline(modelpath)
 print(model)
-
-
-def load_model(model_path):
-    # load the pre-trained model
-    global model
-    # with application.open_instance_resource(model_path, 'rb') as f:
-    #     model = dill.load(f)
-    with open(model_path, 'rb') as f:
-        model = dill.load(f)
-    print(model)
-
-
-# modelpath = os.path.join(os.path.dirname(__file__), 'model', 'init_finall_model.dill')
-# modelpath = os.path.join(os.path.dirname(__file__), 'model', 'numpy_finall_model.dill')
-# load_model(modelpath)
-
-preds, diagnosis, pattern_per_5minute = model.predict(pd.DataFrame(
-    {"id": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-     "x": [760, 784, 772, 760, 768, 776, 852, 728, 800, 832, 808, 800, 840, 808, 792, 828, 808, 788, 816, 796]}))
-
-print(preds, diagnosis, pattern_per_5minute)
 
 '''
 
@@ -189,5 +166,5 @@ def new_series():
 
 
 if __name__ == '__main__':
-    application.run(debug=True, host='0.0.0.0')
-    # application.run(host='0.0.0.0')
+    # application.run(debug=True, host='0.0.0.0')
+    application.run(host='0.0.0.0')
