@@ -1,5 +1,7 @@
 import json
 import os
+import urllib
+from io import StringIO
 from time import strftime
 
 import dill
@@ -100,20 +102,50 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_txt = file.read()
-            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            result_pat4 = ' Результат - отрицательный, Найдено 0 аномалий. '
-            # return redirect(url_for('index', file_txt=file_txt, result_pat4=result_pat4))
-            return render_template('index.html', file_txt=file_txt, result_pat4=result_pat4)
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+            data_bytes = file.read()
+            pred, diagnosis, pattern_per_5minute = _file_process(data_bytes)
+            result_pat4 = ' Результат - отрицательный, Найдено 0 аномалий. ' + str(pred)
+            return render_template('index.html', file_txt=data_bytes, result_pat4=result_pat4)
+    return render_template('index.html')
+    # return '''
+    # <!doctype html>
+    # <title>Upload new File</title>
+    # <h1>Upload new File</h1>
+    # <form method=post enctype=multipart/form-data>
+    #   <input type=file name=file>
+    #   <input type=submit value=Upload>
+    # </form>
+    # '''
+
+
+def _file_process(data_bytes):
+    data = StringIO(str(data_bytes, 'utf-8'))
+    df = pd.read_csv(data)
+    id = df['id'].tolist()
+    x = df['x'].tolist()
+    preds, diagnosis, pattern_per_5minute = _get_prediction(id, x)
+    return preds, diagnosis, pattern_per_5minute
+
+
+def _get_prediction(id_, x):
+    body = {'id': id_, 'x': x}
+    jsondata = json.dumps(body)
+    jsondataasbytes = jsondata.encode('utf-8')  # needs to be bytes
+
+    # myurl = "http://paydocs.ru/predict"
+    myurl = "http://localhost:5000/predict"
+    req = urllib.request.Request(myurl)
+    req.add_header('Content-Type', 'application/json; charset=utf-8')
+    req.add_header('Content-Length', len(jsondataasbytes))
+
+    response = urllib.request.urlopen(req, jsondataasbytes)
+
+    data = json.loads(response.read())
+
+    predictions = data['predictions']
+    diagnosis = data['diagnosis']
+    pattern_per_5minute = data['pattern_per_5minute']
+    return predictions, diagnosis, pattern_per_5minute
 
 
 '''
