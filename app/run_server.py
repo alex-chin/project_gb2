@@ -104,8 +104,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             data_bytes = file.read()
             pred, diagnosis, pattern_per_5minute = _file_process(data_bytes)
-            result_pat4 = ' Результат - отрицательный, Найдено 0 аномалий. ' + str(pred)
-            return render_template('index.html', file_txt=data_bytes, result_pat4=result_pat4)
+            result_pat4 = _format_predict(pred, diagnosis, pattern_per_5minute)
+            return render_template('index.html', result_pat4=result_pat4)
     return render_template('index.html')
     # return '''
     # <!doctype html>
@@ -118,22 +118,34 @@ def upload_file():
     # '''
 
 
+def _format_predict(preds, diagnosis, pattern_per_5minute):
+    num_anomaly = sum(preds)
+    result = 'положительный' if diagnosis else 'отрицательный'
+    metric = f'Показатель {pattern_per_5minute} A/min'
+    buf = f'Результат - {result}, Найдено {num_anomaly} аномалий. {metric if diagnosis else ""}'
+    return buf
+
+
 def _file_process(data_bytes):
+    # прием бинарного файла из потока
+    # преобразования бин -> строка -> csv -> DataFrame
     data = StringIO(str(data_bytes, 'utf-8'))
     df = pd.read_csv(data)
     id = df['id'].tolist()
     x = df['x'].tolist()
+    # вызов модельки
     preds, diagnosis, pattern_per_5minute = _get_prediction(id, x)
     return preds, diagnosis, pattern_per_5minute
 
 
 def _get_prediction(id_, x):
+    # вызов API. В данном случае блокирующий запрос к самому серверу
     body = {'id': id_, 'x': x}
     jsondata = json.dumps(body)
     jsondataasbytes = jsondata.encode('utf-8')  # needs to be bytes
 
-    # myurl = "http://paydocs.ru/predict"
-    myurl = "http://localhost:5000/predict"
+    myurl = "http://paydocs.ru/predict"
+    # myurl = "http://localhost:5000/predict"
     req = urllib.request.Request(myurl)
     req.add_header('Content-Type', 'application/json; charset=utf-8')
     req.add_header('Content-Length', len(jsondataasbytes))
@@ -145,7 +157,7 @@ def _get_prediction(id_, x):
     predictions = data['predictions']
     diagnosis = data['diagnosis']
     pattern_per_5minute = data['pattern_per_5minute']
-    return predictions, diagnosis, pattern_per_5minute
+    return predictions, list(diagnosis.values())[0], list(pattern_per_5minute.values())[0]
 
 
 '''
