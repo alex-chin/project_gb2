@@ -20,9 +20,18 @@ model = None
 
 application = Flask(__name__)
 
-modelpath = os.path.join(os.path.dirname(__file__), 'model', 'dill_clf_model.dill')
+
+def get_flask_file(folder, filename):
+    return os.path.join(os.path.dirname(__file__), folder, filename)
+
+
+# загрузка объекта конвеера обработки и модели предсказания
+modelpath = get_flask_file('model', 'dill_clf_model.dill')
 model = Pipeline(modelpath)
 print(model)
+
+# локальные профили пациентов
+patients_profile = ['patient_1_non_anomaly.csv', 'patient_2_anomaly.csv', 'patient_3_anomaly.csv']
 
 '''
 
@@ -72,11 +81,14 @@ def test_pat(id):
     result_pat2 = ''
     result_pat3 = ''
     if id == '1':
-        result_pat1 = ' Результат - положительный, Найдено 10 аномалий. '
+        preds, diagnosis, pattern_per_5minute = _file_process(get_flask_file('data', patients_profile[0]))
+        result_pat1 = _format_predict(preds, diagnosis, pattern_per_5minute)
     elif id == '2':
-        result_pat2 = ' Результат - положительный, Найдено 3 аномалий. '
+        preds, diagnosis, pattern_per_5minute = _file_process(get_flask_file('data', patients_profile[1]))
+        result_pat2 = _format_predict(preds, diagnosis, pattern_per_5minute)
     elif id == '3':
-        result_pat3 = ' Результат - отрицательный, Найдено 0 аномалий. '
+        preds, diagnosis, pattern_per_5minute = _file_process(get_flask_file('data', patients_profile[2]))
+        result_pat3 = _format_predict(preds, diagnosis, pattern_per_5minute)
     return render_template('index.html', result_pat1=result_pat1, result_pat2=result_pat2, result_pat3=result_pat3)
 
 
@@ -103,7 +115,9 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             data_bytes = file.read()
-            pred, diagnosis, pattern_per_5minute = _file_process(data_bytes)
+            # преобразования бин -> строка -> csv
+            file_stream = StringIO(str(data_bytes, 'utf-8'))
+            pred, diagnosis, pattern_per_5minute = _file_process(file_stream)
             result_pat4 = _format_predict(pred, diagnosis, pattern_per_5minute)
             return render_template('index.html', result_pat4=result_pat4)
     return render_template('index.html')
@@ -126,11 +140,8 @@ def _format_predict(preds, diagnosis, pattern_per_5minute):
     return buf
 
 
-def _file_process(data_bytes):
-    # прием бинарного файла из потока
-    # преобразования бин -> строка -> csv -> DataFrame
-    data = StringIO(str(data_bytes, 'utf-8'))
-    df = pd.read_csv(data)
+def _file_process(file):
+    df = pd.read_csv(file)
     id = df['id'].tolist()
     x = df['x'].tolist()
     # вызов модельки

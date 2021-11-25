@@ -10,20 +10,20 @@
             <th> Результат</th>
         </tr>
         <tr>
-            <td><a href="{{ url_for('files', filename = 'pat1.csv') }}">Пациент 1</a></td>
-            <td><a href="{{ url_for('test_pat',id = 1) }}">Тестирование пациент1 предварительно положительный </a></td>
+            <td><a href="{{ url_for('files', filename = 'patient_1_non_anomaly.csv') }}">Пациент 1</a></td>
+            <td><a href="{{ url_for('test_pat',id = 1) }}">Тестирование пациент1 предварительно отрицательный </a></td>
             <td><span>{{ result_pat1 }}</span></td>
-        </tr>
-        <tr>
-            <td><a href="{{ url_for('files', filename = 'pat2.csv') }}">Пациент 2</a></td>
+        </tr>        <tr>
+            <td><a href="{{ url_for('files', filename = 'patient_2_anomaly.csv') }}">Пациент 2</a></td>
             <td><a href="{{ url_for('test_pat',id = 2) }}">Тестирование пациент2 предварительно положительный </a></td>
             <td><span>{{ result_pat2 }}</span></td>
         </tr>
         <tr>
-            <td><a href="{{ url_for('files', filename = 'pat3.csv') }}">Пациент 3</a></td>
-            <td><a href="{{ url_for('test_pat',id = 3) }}">Тестирование пациент3 предварительно отрицательный </a></td>
+            <td><a href="{{ url_for('files', filename = 'patient_3_anomaly.csv') }}">Пациент 3</a></td>
+            <td><a href="{{ url_for('test_pat',id = 3) }}">Тестирование пациент3 предварительно положительный </a></td>
             <td><span>{{ result_pat3 }}</span></td>
         </tr>
+
         <tr>
             <td></td>
         </tr>
