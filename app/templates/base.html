@@ -6,12 +6,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Проект ML по определению анномалий COVID-19</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <h1>Разработка детектора COVID-19 аномалий в ритме сердца</h1>
 <p>Разработанная модель находит специфичные для COVID-19 аномалии в измерениях сердечного ритма человека</p>
 <p>
-    <img src="{{ url_for('static', filename = 'CardioSpike.png') }}" alt="">
+    <img class="series" src="{{ url_for('static', filename = 'CardioSpike.png') }}" alt="">
 </p>
 {% block body %}
 {% endblock %}

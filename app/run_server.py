@@ -214,12 +214,6 @@ def predict():
     return jsonify(data)
 
 
-@application.route('/series/', methods=['POST'])
-def new_series():
-    series = request.json
-    return '<h1>Waiting for results</h1>' + json.dumps(series)
-
-
 if __name__ == '__main__':
-    # application.run(debug=True, host='0.0.0.0')
-    application.run(host='0.0.0.0')
+    application.run(debug=True, host='0.0.0.0')
+    # application.run(host='0.0.0.0')
