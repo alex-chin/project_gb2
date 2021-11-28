@@ -37,6 +37,7 @@
 - ``EDA_and_learning_model/CardioSpike2.ipynb`` - EDA и создание модели.
 - ``requirements_prod.txt`` - необходимые компоненты для установки на сервер 
 - ``app/run_server.py`` - запуск сервера на основе Flask
+- ``pipeline.py`` - пайплайн предобработки и постобработки данных. 
 - ``app/model/dill_clf_model.dill`` - реализованная модель
 - ``app/data`` - примеры профилей пациентов
   - ``app/data/patient_1_non_anomaly.csv`` - предварительно отрицательный диагноз
