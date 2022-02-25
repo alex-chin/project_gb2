@@ -57,9 +57,9 @@ def index():
     # главная страница
     return render_template('index.html', is_home=True)
 
-@application.route('/yandex_dee3385fbef3f620.html')
-def verification():
-    return render_template('yandex_dee3385fbef3f620.html')
+# @application.route('/yandex_dee3385fbef3f620.html')
+# def verification():
+#     return render_template('yandex_dee3385fbef3f620.html')
 
 
 @application.route('/about')
